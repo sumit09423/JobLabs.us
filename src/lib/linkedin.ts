@@ -230,44 +230,47 @@ async function fetchPostsFromRss(): Promise<LinkedInPost[]> {
           (match) => match[1],
         );
 
-  return entryBlocks
-    .map((block, index) => {
-      const rawDescription =
-        block.match(/<description[^>]*>([\s\S]*?)<\/description>/i)?.[1] ??
-        block.match(
-          /<content:encoded[^>]*>([\s\S]*?)<\/content:encoded>/i,
-        )?.[1] ??
-        "";
-      const title = tagValue(block, "title");
-      const description = stripHtml(rawDescription);
-      const text = description || title;
-      if (!text) return null;
+  const posts: LinkedInPost[] = [];
 
-      const link =
-        tagValue(block, "link") ??
-        attributeValue(block, "link", "href") ??
-        COMPANY_PAGE_URL;
-      const publishedAt = formatDate(
-        tagValue(block, "pubDate") ??
-          tagValue(block, "published") ??
-          tagValue(block, "updated"),
-      );
-      const image =
-        extractImageFromHtml(rawDescription) ??
-        normalizeImageUrl(attributeValue(block, "enclosure", "url")) ??
-        normalizeImageUrl(attributeValue(block, "media:content", "url")) ??
-        normalizeImageUrl(attributeValue(block, "media:thumbnail", "url"));
+  for (const [index, block] of entryBlocks.entries()) {
+    const rawDescription =
+      block.match(/<description[^>]*>([\s\S]*?)<\/description>/i)?.[1] ??
+      block.match(
+        /<content:encoded[^>]*>([\s\S]*?)<\/content:encoded>/i,
+      )?.[1] ??
+      "";
+    const title = tagValue(block, "title");
+    const description = stripHtml(rawDescription);
+    const text = description || title;
+    if (!text) continue;
 
-      return {
-        id: tagValue(block, "guid") ?? `${link}-${index}`,
-        text,
-        url: link,
-        publishedAt,
-        image,
-      } satisfies LinkedInPost;
-    })
-    .filter((post): post is LinkedInPost => post !== null)
-    .slice(0, MAX_POSTS);
+    const link =
+      tagValue(block, "link") ??
+      attributeValue(block, "link", "href") ??
+      COMPANY_PAGE_URL;
+    const publishedAt = formatDate(
+      tagValue(block, "pubDate") ??
+        tagValue(block, "published") ??
+        tagValue(block, "updated"),
+    );
+    const image =
+      extractImageFromHtml(rawDescription) ??
+      normalizeImageUrl(attributeValue(block, "enclosure", "url")) ??
+      normalizeImageUrl(attributeValue(block, "media:content", "url")) ??
+      normalizeImageUrl(attributeValue(block, "media:thumbnail", "url"));
+
+    posts.push({
+      id: tagValue(block, "guid") ?? `${link}-${index}`,
+      text,
+      url: link,
+      publishedAt,
+      image,
+    });
+
+    if (posts.length >= MAX_POSTS) break;
+  }
+
+  return posts;
 }
 
 export async function getLinkedInPosts(): Promise<LinkedInPostsResponse> {

@@ -99,20 +99,24 @@ async function fetchPostsFromInstagramApi(): Promise<InstagramPost[]> {
     }>;
   };
 
-  return (data.data ?? [])
-    .map((item) => {
-      const caption = item.caption?.trim();
-      if (!caption && !item.media_url && !item.thumbnail_url) return null;
-      return {
-        id: item.id ?? crypto.randomUUID(),
-        caption: caption || "View this post on Instagram",
-        url: item.permalink || INSTAGRAM_PROFILE_URL,
-        publishedAt: formatDate(item.timestamp),
-        image: item.thumbnail_url || item.media_url,
-      } satisfies InstagramPost;
-    })
-    .filter((post): post is InstagramPost => post !== null)
-    .slice(0, MAX_POSTS);
+  const posts: InstagramPost[] = [];
+
+  for (const item of data.data ?? []) {
+    const caption = item.caption?.trim();
+    if (!caption && !item.media_url && !item.thumbnail_url) continue;
+
+    posts.push({
+      id: item.id ?? crypto.randomUUID(),
+      caption: caption || "View this post on Instagram",
+      url: item.permalink || INSTAGRAM_PROFILE_URL,
+      publishedAt: formatDate(item.timestamp),
+      image: item.thumbnail_url || item.media_url,
+    });
+
+    if (posts.length >= MAX_POSTS) break;
+  }
+
+  return posts;
 }
 
 async function fetchPostsFromRss(): Promise<InstagramPost[]> {
@@ -143,41 +147,44 @@ async function fetchPostsFromRss(): Promise<InstagramPost[]> {
           (match) => match[1],
         );
 
-  return entryBlocks
-    .map((block, index) => {
-      const rawDescription =
-        block.match(/<description[^>]*>([\s\S]*?)<\/description>/i)?.[1] ??
-        block.match(
-          /<content:encoded[^>]*>([\s\S]*?)<\/content:encoded>/i,
-        )?.[1] ??
-        "";
-      const title = tagValue(block, "title");
-      const caption = stripHtml(rawDescription) || title;
-      if (!caption) return null;
+  const posts: InstagramPost[] = [];
 
-      const link =
-        tagValue(block, "link") ??
-        attributeValue(block, "link", "href") ??
-        INSTAGRAM_PROFILE_URL;
+  for (const [index, block] of entryBlocks.entries()) {
+    const rawDescription =
+      block.match(/<description[^>]*>([\s\S]*?)<\/description>/i)?.[1] ??
+      block.match(
+        /<content:encoded[^>]*>([\s\S]*?)<\/content:encoded>/i,
+      )?.[1] ??
+      "";
+    const title = tagValue(block, "title");
+    const caption = stripHtml(rawDescription) || title;
+    if (!caption) continue;
 
-      return {
-        id: tagValue(block, "guid") ?? `${link}-${index}`,
-        caption,
-        url: link,
-        publishedAt: formatDate(
-          tagValue(block, "pubDate") ??
-            tagValue(block, "published") ??
-            tagValue(block, "updated"),
-        ),
-        image:
-          attributeValue(block, "enclosure", "url") ??
-          attributeValue(block, "media:content", "url") ??
-          attributeValue(block, "media:thumbnail", "url") ??
-          extractImageFromHtml(rawDescription),
-      } satisfies InstagramPost;
-    })
-    .filter((post): post is InstagramPost => post !== null)
-    .slice(0, MAX_POSTS);
+    const link =
+      tagValue(block, "link") ??
+      attributeValue(block, "link", "href") ??
+      INSTAGRAM_PROFILE_URL;
+
+    posts.push({
+      id: tagValue(block, "guid") ?? `${link}-${index}`,
+      caption,
+      url: link,
+      publishedAt: formatDate(
+        tagValue(block, "pubDate") ??
+          tagValue(block, "published") ??
+          tagValue(block, "updated"),
+      ),
+      image:
+        attributeValue(block, "enclosure", "url") ??
+        attributeValue(block, "media:content", "url") ??
+        attributeValue(block, "media:thumbnail", "url") ??
+        extractImageFromHtml(rawDescription),
+    });
+
+    if (posts.length >= MAX_POSTS) break;
+  }
+
+  return posts;
 }
 
 export async function getInstagramPosts(): Promise<InstagramPostsResponse> {
