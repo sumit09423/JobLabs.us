@@ -1,6 +1,7 @@
 import {
   fallbackInstagramPosts,
   INSTAGRAM_PROFILE_URL,
+  withInstagramFallbackImages,
 } from "@/data/instagram-posts";
 import type {
   InstagramPost,
@@ -191,7 +192,10 @@ export async function getInstagramPosts(): Promise<InstagramPostsResponse> {
   try {
     const apiPosts = await fetchPostsFromInstagramApi();
     if (apiPosts.length > 0) {
-      return { posts: apiPosts, source: "instagram-api" };
+      return {
+        posts: withInstagramFallbackImages(apiPosts),
+        source: "instagram-api",
+      };
     }
   } catch (error) {
     console.error("Failed to fetch Instagram API posts:", error);
@@ -200,7 +204,10 @@ export async function getInstagramPosts(): Promise<InstagramPostsResponse> {
   try {
     const rssPosts = await fetchPostsFromRss();
     if (rssPosts.length > 0) {
-      return { posts: rssPosts, source: "rss" };
+      return {
+        posts: withInstagramFallbackImages(rssPosts),
+        source: "rss",
+      };
     }
   } catch (error) {
     console.error("Failed to fetch Instagram RSS posts:", error);

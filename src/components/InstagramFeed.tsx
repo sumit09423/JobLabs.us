@@ -1,12 +1,13 @@
 "use client";
 
-import Image from "next/image";
 import Link from "next/link";
 import { useEffect, useState } from "react";
 import Reveal from "@/components/Reveal";
+import SocialFeedImage from "@/components/SocialFeedImage";
 import {
   fallbackInstagramPosts,
   INSTAGRAM_PROFILE_URL,
+  instagramFallbackImage,
 } from "@/data/instagram-posts";
 import type {
   InstagramPost,
@@ -121,52 +122,42 @@ export default function InstagramFeed() {
           </div>
         ) : (
           <div className="grid grid-cols-1 gap-5 sm:grid-cols-2 lg:grid-cols-3 lg:gap-6">
-            {posts.map((post, index) => (
-              <Reveal
-                key={post.id}
-                delay={Math.min(index, 5) * 80}
-                direction="up"
-              >
-                <a
-                  href={post.url}
-                  target="_blank"
-                  rel="noreferrer"
-                  className="group flex h-full flex-col overflow-hidden rounded-[24px] border border-[#eee] bg-white shadow-[0_10px_40px_rgba(0,0,0,0.04)] transition-shadow hover:shadow-[0_16px_48px_rgba(0,0,0,0.08)]"
+            {posts.map((post, index) => {
+              const fallbackSrc = instagramFallbackImage(index);
+              return (
+                <Reveal
+                  key={post.id}
+                  delay={Math.min(index, 5) * 80}
+                  direction="up"
                 >
-                  <div className="relative aspect-square overflow-hidden bg-[#f3f4f6]">
-                    {post.image ? (
-                      <Image
+                  <a
+                    href={post.url}
+                    target="_blank"
+                    rel="noreferrer"
+                    className="group flex h-full flex-col overflow-hidden rounded-[24px] border border-[#eee] bg-white shadow-[0_10px_40px_rgba(0,0,0,0.04)] transition-shadow hover:shadow-[0_16px_48px_rgba(0,0,0,0.08)]"
+                  >
+                    <div className="relative aspect-square overflow-hidden bg-[#f3f4f6]">
+                      <SocialFeedImage
                         src={post.image}
+                        fallbackSrc={fallbackSrc}
                         alt="Instagram post"
-                        fill
-                        sizes="(max-width: 768px) 100vw, 33vw"
-                        className="object-cover transition-transform duration-500 group-hover:scale-105"
-                        unoptimized={
-                          !post.image.includes("images.unsplash.com")
-                        }
                       />
-                    ) : (
-                      <div className="flex h-full items-center justify-center bg-gradient-to-br from-[#f09433]/20 via-[#dc2743]/15 to-[#bc1888]/20 px-6">
-                        <span className="text-center text-[15px] font-semibold text-[#111827]">
-                          @job_labs.us
-                        </span>
-                      </div>
-                    )}
-                  </div>
-                  <div className="flex flex-1 flex-col p-5">
-                    <p className="text-[12px] text-[#9ca3af]">
-                      {post.publishedAt}
-                    </p>
-                    <p className="mt-2 line-clamp-3 flex-1 text-[14px] leading-[1.6] text-[#374151]">
-                      {post.caption}
-                    </p>
-                    <span className="mt-4 text-[13px] font-semibold text-[#E1306C] group-hover:underline">
-                      View on Instagram →
-                    </span>
-                  </div>
-                </a>
-              </Reveal>
-            ))}
+                    </div>
+                    <div className="flex flex-1 flex-col p-5">
+                      <p className="text-[12px] text-[#9ca3af]">
+                        {post.publishedAt}
+                      </p>
+                      <p className="mt-2 line-clamp-3 flex-1 text-[14px] leading-[1.6] text-[#374151]">
+                        {post.caption}
+                      </p>
+                      <span className="mt-4 text-[13px] font-semibold text-[#E1306C] group-hover:underline">
+                        View on Instagram →
+                      </span>
+                    </div>
+                  </a>
+                </Reveal>
+              );
+            })}
           </div>
         )}
       </div>

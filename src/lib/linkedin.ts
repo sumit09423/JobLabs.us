@@ -1,4 +1,4 @@
-import { fallbackLinkedInPosts } from "@/data/linkedin-posts";
+import { fallbackLinkedInPosts, withLinkedInFallbackImages } from "@/data/linkedin-posts";
 import {
   getValidAccessToken,
   readLinkedInToken,
@@ -277,7 +277,10 @@ export async function getLinkedInPosts(): Promise<LinkedInPostsResponse> {
   try {
     const apiPosts = await fetchPostsFromLinkedInApi();
     if (apiPosts.length > 0) {
-      return { posts: apiPosts, source: "linkedin-api" };
+      return {
+        posts: withLinkedInFallbackImages(apiPosts),
+        source: "linkedin-api",
+      };
     }
   } catch (error) {
     console.error("Failed to fetch LinkedIn API posts:", error);
@@ -286,7 +289,10 @@ export async function getLinkedInPosts(): Promise<LinkedInPostsResponse> {
   try {
     const rssPosts = await fetchPostsFromRss();
     if (rssPosts.length > 0) {
-      return { posts: rssPosts, source: "rss" };
+      return {
+        posts: withLinkedInFallbackImages(rssPosts),
+        source: "rss",
+      };
     }
   } catch (error) {
     console.error("Failed to fetch LinkedIn RSS posts:", error);

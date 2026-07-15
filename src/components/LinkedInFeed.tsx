@@ -3,7 +3,11 @@
 import Link from "next/link";
 import { useEffect, useState } from "react";
 import Reveal from "@/components/Reveal";
-import { fallbackLinkedInPosts } from "@/data/linkedin-posts";
+import SocialFeedImage from "@/components/SocialFeedImage";
+import {
+  fallbackLinkedInPosts,
+  linkedInFallbackImage,
+} from "@/data/linkedin-posts";
 import type { LinkedInPost, LinkedInPostsResponse } from "@/types/linkedin";
 
 const REFRESH_MS = 60 * 1000;
@@ -104,52 +108,48 @@ export default function LinkedInFeed() {
           </div>
         ) : (
           <div className="grid grid-cols-1 gap-5 sm:grid-cols-2 lg:grid-cols-3 lg:gap-6">
-            {posts.map((post, index) => (
-              <Reveal key={post.id} delay={Math.min(index, 5) * 80} direction="up">
-                <a
-                  href={post.url}
-                  target="_blank"
-                  rel="noreferrer"
-                  className="group flex h-full flex-col overflow-hidden rounded-[24px] bg-white shadow-[0_10px_40px_rgba(0,0,0,0.05)] transition-shadow hover:shadow-[0_16px_48px_rgba(0,0,0,0.08)]"
+            {posts.map((post, index) => {
+              const fallbackSrc = linkedInFallbackImage(index);
+              return (
+                <Reveal
+                  key={post.id}
+                  delay={Math.min(index, 5) * 80}
+                  direction="up"
                 >
-                  {post.image ? (
+                  <a
+                    href={post.url}
+                    target="_blank"
+                    rel="noreferrer"
+                    className="group flex h-full flex-col overflow-hidden rounded-[24px] bg-white shadow-[0_10px_40px_rgba(0,0,0,0.05)] transition-shadow hover:shadow-[0_16px_48px_rgba(0,0,0,0.08)]"
+                  >
                     <div className="relative aspect-[16/10] overflow-hidden bg-[#f3f4f6]">
-                      {/* eslint-disable-next-line @next/next/no-img-element */}
-                      <img
-                        src={post.image.replace(/&amp;/g, "&")}
+                      <SocialFeedImage
+                        src={post.image}
+                        fallbackSrc={fallbackSrc}
                         alt="LinkedIn post preview"
-                        className="h-full w-full object-cover transition-transform duration-500 group-hover:scale-105"
-                        loading="lazy"
-                        referrerPolicy="no-referrer"
                       />
                     </div>
-                  ) : (
-                    <div className="flex aspect-[16/10] items-center justify-center bg-[#E8F1FF] px-6">
-                      <span className="text-center text-[15px] font-semibold leading-snug text-[#081B4B]">
-                        JobLabs on LinkedIn
-                      </span>
-                    </div>
-                  )}
 
-                  <div className="flex flex-1 flex-col p-5 sm:p-6">
-                    <div className="flex items-center gap-2 text-[12px] text-[#6b7280]">
-                      <span className="inline-flex h-7 w-7 items-center justify-center rounded-full bg-[#0A66C2] text-white">
-                        <LinkedInIcon />
+                    <div className="flex flex-1 flex-col p-5 sm:p-6">
+                      <div className="flex items-center gap-2 text-[12px] text-[#6b7280]">
+                        <span className="inline-flex h-7 w-7 items-center justify-center rounded-full bg-[#0A66C2] text-white">
+                          <LinkedInIcon />
+                        </span>
+                        <span>JobLabs</span>
+                        <span>·</span>
+                        <span>{post.publishedAt}</span>
+                      </div>
+                      <p className="mt-4 line-clamp-4 flex-1 text-[15px] leading-[1.65] text-[#374151]">
+                        {post.text}
+                      </p>
+                      <span className="mt-5 text-[13px] font-semibold text-[#0A66C2] group-hover:underline">
+                        Read on LinkedIn →
                       </span>
-                      <span>JobLabs</span>
-                      <span>·</span>
-                      <span>{post.publishedAt}</span>
                     </div>
-                    <p className="mt-4 line-clamp-4 flex-1 text-[15px] leading-[1.65] text-[#374151]">
-                      {post.text}
-                    </p>
-                    <span className="mt-5 text-[13px] font-semibold text-[#0A66C2] group-hover:underline">
-                      Read on LinkedIn →
-                    </span>
-                  </div>
-                </a>
-              </Reveal>
-            ))}
+                  </a>
+                </Reveal>
+              );
+            })}
           </div>
         )}
       </div>
