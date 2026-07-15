@@ -33,6 +33,10 @@ yarn-error.log*
 # env files (can opt-in for committing if needed)
 .env*
 
+# LinkedIn OAuth token store
+.linkedin-token.json
+.linkedin-oauth-state.json
+
 # vercel
 .vercel
 
