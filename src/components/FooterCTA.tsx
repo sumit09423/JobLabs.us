@@ -21,7 +21,7 @@ export default function FooterCTA() {
           </p>
           <div className="mt-8 flex flex-col items-center justify-center gap-3 sm:flex-row">
             <Link
-              href="/signup"
+              href="/contacts"
               className="inline-flex h-12 min-w-[140px] items-center justify-center rounded-full bg-[#1F6BFF] px-7 text-[15px] font-semibold !text-white transition-opacity hover:opacity-90"
             >
               Start Now

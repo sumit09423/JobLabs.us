@@ -16,7 +16,7 @@ export default function Services() {
               JobLabs helps you grow, apply smarter, and get hired faster.
             </p>
             <Link
-              href="/signup"
+              href="/services"
               className="mt-7 inline-flex h-12 items-center justify-center rounded-full bg-[#081B4B] px-8 text-[15px] font-semibold !text-white transition-opacity hover:opacity-90"
             >
               Explore services
@@ -71,7 +71,7 @@ export default function Services() {
               Join thousands building better careers every day
             </p>
             <Link
-              href="/signup"
+              href="/contacts"
               className="mt-8 inline-flex h-11 w-fit items-center justify-center rounded-full bg-[#081B4B] px-6 text-[14px] font-semibold !text-white transition-opacity hover:opacity-90"
             >
               Join community

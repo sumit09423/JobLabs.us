@@ -133,7 +133,7 @@ export default function TrustBanner() {
             recruiting, verification, training, and payroll support.
           </p>
           <Link
-            href="/signup"
+            href="/contacts"
             className="mt-8 inline-flex h-12 w-fit items-center justify-center rounded-md bg-white px-6 text-[15px] font-semibold text-[#081B4B] transition-opacity hover:opacity-90"
           >
             Stay with us

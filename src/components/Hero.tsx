@@ -144,7 +144,7 @@ export default function Hero() {
           style={{ animationDelay: "450ms" }}
         >
           <a
-            href="/signup"
+            href="/contacts"
             className="inline-flex h-14 min-w-[360px] items-center justify-center rounded-full bg-black px-16 text-[16px] font-semibold !text-white shadow-[0_12px_40px_rgba(0,0,0,0.12)] transition-opacity hover:opacity-90 sm:h-16 sm:min-w-[420px] sm:px-20 sm:text-[18px]"
           >
             Get started
