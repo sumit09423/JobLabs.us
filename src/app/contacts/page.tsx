@@ -9,11 +9,16 @@ const contactInfo = [
     title: "Call Center",
     content: (
       <>
-        <a href="tel:+12145550142" className="block hover:text-[#1F6BFF]">
-          +1 214 555 0142
+        <a href="tel:+917859943475" className="block hover:text-[#1F6BFF]">
+          +91 78599 43475
         </a>
-        <a href="tel:+14695550198" className="block hover:text-[#1F6BFF]">
-          +1 469 555 0198
+        <a
+          href="https://wa.me/917859943475"
+          target="_blank"
+          rel="noreferrer"
+          className="block hover:text-[#1F6BFF]"
+        >
+          WhatsApp
         </a>
       </>
     ),
